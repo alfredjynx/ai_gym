@@ -41,24 +41,25 @@ class ProblemSpecification(State):
             l = self.campo
             l[self.elevation][self.pos] = 'LIMPO'
             successors.append(ProblemSpecification('limpar',self.pos,l,self.elevation,self.dir))
-            print('LIMPAR')
+            # print('LIMPAR')
         
         elif self.dir!=[0,0]:
             successors.append(ProblemSpecification('andar',self.pos+self.dir[1],self.campo,self.elevation+self.dir[0],[0,0]))
-            print('ANDAR')
+            # print('ANDAR')
 
         else:
             val = self.pontos_sujos(self.elevation,self.pos)
 
             if val!=False:
                 successors.append(val)
+                # print('SUJO AO LADO')
             else:
                 poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
                 for d in poss:
                     if self.pontos_sujos(d[0],d[1])!=False:
                         successors.append(self.pontos_sujos(d[0],d[1]))
                         break
-            print('DIRECIONAR')
+                # print('DIRECIONAR PRO MAIS PRÓXIMO')
     
         return successors
 
@@ -73,7 +74,7 @@ class ProblemSpecification(State):
 
         for i in range(len(poss)):
             if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
-                return (ProblemSpecification('limpar',self.pos,self.campo,elevation,[poss[i][0]-elevation,poss[i][1]-pos]))
+                return (ProblemSpecification('direcionar',self.pos,self.campo,elevation,[poss[i][0]-elevation,poss[i][1]-pos]))
         
         return False
 
