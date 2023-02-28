@@ -21,44 +21,32 @@ class ProblemSpecification(State):
     def sucessors(self):
         successors = []
         # esq
-        if self.pos>0:
-            successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
+        # if self.pos>0:
+        #     successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
 
-        # direita
-        if self.pos<len(self.campo[self.elevation])-1:
-            successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
+        # # direita
+        # if self.pos<len(self.campo[self.elevation])-1:
+        #     successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
 
-        # cima
-        if self.elevation>0:
-            successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
+        # # cima
+        # if self.elevation>0:
+        #     successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
 
-        # baixo
-        if self.elevation<len(self.campo)-1:
-            successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
+        # # baixo
+        # if self.elevation<len(self.campo)-1:
+        #     successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
 
         #limpar
         if self.campo[self.elevation][self.pos] == 'SUJO':
-            l = list()
-            for i in range(len(self.campo[self.elevation])):
-                if i==self.pos:
-                    l.append('LIMPO')
-                else:
-                    l.append(self.campo[self.elevation][i])
-            
-            a = list()
-            for i in range(len(self.campo)):
-                if i==self.elevation:
-                    a.append(l)
-                else:
-                    a.append(self.campo[i])
-            
-            successors.append(ProblemSpecification('limpar',self.pos,a,self.elevation,self.dir))
+            l = self.campo
+            l[self.elevation][self.pos] = 'LIMPO'
+            successors.append(ProblemSpecification('limpar',self.pos,l,self.elevation,self.dir))
         
         elif self.dir!=[0,0]:
-            successors.append(ProblemSpecification('limpar',self.pos+self.dir[1],a,self.elevation+self.dir[0],[0,0]))
+            successors.append(ProblemSpecification('andar',self.pos+self.dir[1],self.campo,self.elevation+self.dir[0],[0,0]))
 
         else:
-            poss = [[self.elevation+1,self.pos-1],[self.elevation+1,self.pos],[self.elevation+1,self.pos+1],[self.elevation,self.pos+1],[self.elevation-1,self.pos+1],[self.elevation-1,self.pos],[self.elevation-1,self.pos-1],[self.elevation,self.pos-1]]
+            poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
             estado = list()
             for pos in poss:
                 if (pos[0]<0 | pos[0]==len(self.campo)) | (pos[1]<0 | pos[1]==len(self.campo[self.elevation])):
@@ -68,7 +56,7 @@ class ProblemSpecification(State):
 
             for i in range(len(poss)):
                 if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
-                    successors.append(ProblemSpecification('limpar',self.pos,self.campo,self.elevation,poss[i]))
+                    successors.append(ProblemSpecification('limpar',self.pos,self.campo,self.elevation,[pos[0]-self.elevation,pos[1]-self.pos]))
     
         return successors
 
