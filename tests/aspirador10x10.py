@@ -41,24 +41,41 @@ class ProblemSpecification(State):
             l = self.campo
             l[self.elevation][self.pos] = 'LIMPO'
             successors.append(ProblemSpecification('limpar',self.pos,l,self.elevation,self.dir))
+            print('LIMPAR')
         
         elif self.dir!=[0,0]:
             successors.append(ProblemSpecification('andar',self.pos+self.dir[1],self.campo,self.elevation+self.dir[0],[0,0]))
+            print('ANDAR')
 
         else:
-            poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
-            estado = list()
-            for pos in poss:
-                if (pos[0]<0 | pos[0]==len(self.campo)) | (pos[1]<0 | pos[1]==len(self.campo[self.elevation])):
-                    estado.append(False)
-                else:
-                    estado.append(True)
+            val = self.pontos_sujos(self.elevation,self.pos)
 
-            for i in range(len(poss)):
-                if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
-                    successors.append(ProblemSpecification('limpar',self.pos,self.campo,self.elevation,[pos[0]-self.elevation,pos[1]-self.pos]))
+            if val!=False:
+                successors.append(val)
+            else:
+                poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
+                for d in poss:
+                    if self.pontos_sujos(d[0],d[1])!=False:
+                        successors.append(self.pontos_sujos(d[0],d[1]))
+                        break
+            print('DIRECIONAR')
     
         return successors
+
+    def pontos_sujos(self,elevation,pos):
+        poss = [[elevation+1,pos],[elevation,pos+1],[elevation-1,pos],[elevation,pos-1]]
+        estado = list()
+        for p in poss:
+            if (p[0]<0 | p[0]==len(self.campo)) | (p[1]<0 | p[1]==len(self.campo[elevation])):
+                estado.append(False)
+            else:
+                estado.append(True)
+
+        for i in range(len(poss)):
+            if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
+                return (ProblemSpecification('limpar',self.pos,self.campo,elevation,[poss[i][0]-elevation,poss[i][1]-pos]))
+        
+        return False
 
     
     def is_goal(self): return True if self.campo == self.meta else False
