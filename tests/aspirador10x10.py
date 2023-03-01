@@ -1,5 +1,6 @@
 from aigyminsper.search.SearchAlgorithms import BuscaProfundidadeIterativa, BuscaLargura, BuscaProfundidade
 from aigyminsper.search.Graph import State
+import copy
 
 class ProblemSpecification(State):
 
@@ -17,68 +18,98 @@ class ProblemSpecification(State):
             casa.append(c)
         self.linha_meta = c
         self.meta = casa
-    
+
     def sucessors(self):
+        
         successors = []
-        # # esq
-        # if self.pos>0:
-        #     successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
 
-        # # # direita
-        # if self.pos<len(self.campo[self.elevation])-1:
-        #     successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
-
-        # # # cima
-        # if self.elevation>0:
-        #     successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
-
-        # # # baixo
-        # if self.elevation<len(self.campo)-1:
-        #     successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
-
-        #limpar
         if self.campo[self.elevation][self.pos] == 'SUJO':
-            l = self.campo
+            l = copy.deepcopy(self.campo)
             l[self.elevation][self.pos] = 'LIMPO'
             successors.append(ProblemSpecification('limpar',self.pos,l,self.elevation,self.dir))
-            # print('LIMPAR')
         
-        elif self.dir!=[0,0]:
-            successors.append(ProblemSpecification('andar',self.pos+self.dir[1],self.campo,self.elevation+self.dir[0],[0,0]))
-            # print('ANDAR')
-
         else:
-            val = self.pontos_sujos(self.elevation,self.pos)
+            # esq
+            if self.pos>0:
+                successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
 
-            if val!=False:
-                successors.append(val)
-                # print('SUJO AO LADO')
-            else:
-                poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
-                for d in poss:
-                    if self.pontos_sujos(d[0],d[1])!=False:
-                        successors.append(self.pontos_sujos(d[0],d[1]))
-                        break
-                # print('DIRECIONAR PRO MAIS PRÓXIMO')
+            # direita
+            if self.pos<len(self.campo[self.elevation])-1:
+                successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
+
+            # cima
+            if self.elevation>0:
+                successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
+
+            # baixo
+            if self.elevation<len(self.campo)-1:
+                successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
+
         
-        # print(self.campo)
-    
+        
         return successors
+    
+    # def sucessors(self):
+    #     successors = []
+    #     # # esq
+    #     # if self.pos>0:
+    #     #     successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
 
-    def pontos_sujos(self,elevation,pos):
-        poss = [[elevation+1,pos],[elevation,pos+1],[elevation-1,pos],[elevation,pos-1]]
-        estado = list()
-        for p in poss:
-            if (p[0]<0 | p[0]>=len(self.campo)) | (p[1]<0 | p[1]>=len(self.campo[elevation])):
-                estado.append(False)
-            else:
-                estado.append(True)
+    #     # # # direita
+    #     # if self.pos<len(self.campo[self.elevation])-1:
+    #     #     successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
 
-        for i in range(len(poss)):
-            if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
-                return (ProblemSpecification('direcionar',self.pos,self.campo,elevation,[poss[i][0]-elevation,poss[i][1]-pos]))
+    #     # # # cima
+    #     # if self.elevation>0:
+    #     #     successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
+
+    #     # # # baixo
+    #     # if self.elevation<len(self.campo)-1:
+    #     #     successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
+
+    #     #limpar
+    #     if self.campo[self.elevation][self.pos] == 'SUJO':
+    #         l = copy.deepcopy(self.campo)
+    #         l[self.elevation][self.pos] = 'LIMPO'
+    #         successors.append(ProblemSpecification('limpar',self.pos,l,self.elevation,self.dir))
+    #         # print('LIMPAR')
         
-        return False
+    #     elif self.dir!=[0,0]:
+    #         successors.append(ProblemSpecification('andar',self.pos+self.dir[1],self.campo,self.elevation+self.dir[0],[0,0]))
+    #         # print('ANDAR')
+
+    #     else:
+    #         val = self.pontos_sujos(self.elevation,self.pos)
+
+    #         if val!=False:
+    #             successors.append(val)
+    #             # print('SUJO AO LADO')
+    #         else:
+    #             poss = [[self.elevation+1,self.pos],[self.elevation,self.pos+1],[self.elevation-1,self.pos],[self.elevation,self.pos-1]]
+    #             for d in poss:
+    #                 if self.pontos_sujos(d[0],d[1])!=False:
+    #                     successors.append(self.pontos_sujos(d[0],d[1]))
+    #                     break
+    #             # print('DIRECIONAR PRO MAIS PRÓXIMO')
+        
+    #     # print(self.campo)
+    
+    #     return successors
+
+    # def pontos_sujos(self,elevation,pos):
+    #     poss = [[elevation+1,pos],[elevation,pos+1],[elevation-1,pos],[elevation,pos-1]]
+    #     estado = list()
+    #     for p in poss:
+    #         if (p[0]<0 | p[0]>=len(self.campo)) | (p[1]<0 | p[1]>=len(self.campo[elevation])):
+    #             estado.append(False)
+    #         else:
+    #             estado.append(True)
+    #     direcao = ['cima','direita','baixo','esquerda']
+    #     for i in range(len(poss)):
+    #         if self.campo[poss[i][0]][poss[i][1]] == 'SUJO' and estado[i]:
+    #             return (ProblemSpecification(direcao[i],self.pos,self.campo,elevation,[poss[i][0]-elevation,poss[i][1]-pos]))
+        
+    #     return False
 
     
     def is_goal(self): return True if self.campo == self.meta else False
@@ -108,7 +139,7 @@ class ProblemSpecification(State):
 
 
 def main():
-    print('Busca em profundidade iterativa')
+    print('Busca em profundidade')
     casa = list()
     c = list()
     for i in range(10):
@@ -116,9 +147,9 @@ def main():
     for i in range(10):
         casa.append(c)
     state = ProblemSpecification("Eu mesmo",0,casa,0,[0,0])
-    # algorithm = BuscaProfundidade()
-    algorithm = BuscaLargura()
-    result = algorithm.search(state)
+    algorithm = BuscaProfundidade()
+    # algorithm = BuscaLargura()
+    result = algorithm.search(state,20)
     if result != None:
         print('Achou!')
         print(result.show_path())
