@@ -1,4 +1,4 @@
-from aigyminsper.search.SearchAlgorithms import BuscaProfundidadeIterativa
+from aigyminsper.search.SearchAlgorithms import BuscaProfundidadeIterativa, BuscaProfundidade, BuscaLargura
 from aigyminsper.search.Graph import State
 
 class ProblemSpecification(State):
@@ -74,6 +74,8 @@ def main():
     print('Busca em profundidade iterativa')
     state = ProblemSpecification("","ESQ",["SUJO","SUJO"],["SUJO","SUJO"],0)
     algorithm = BuscaProfundidadeIterativa()
+    algorithm = BuscaProfundidade()
+    algorithm = BuscaLargura()
     result = algorithm.search(state)
     if result != None:
         print('Achou!')

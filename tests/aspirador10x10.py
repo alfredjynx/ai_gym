@@ -1,4 +1,4 @@
-from aigyminsper.search.SearchAlgorithms import BuscaProfundidadeIterativa, BuscaLargura
+from aigyminsper.search.SearchAlgorithms import BuscaProfundidadeIterativa, BuscaLargura, BuscaProfundidade
 from aigyminsper.search.Graph import State
 
 class ProblemSpecification(State):
@@ -20,19 +20,19 @@ class ProblemSpecification(State):
     
     def sucessors(self):
         successors = []
-        # esq
+        # # esq
         # if self.pos>0:
         #     successors.append(ProblemSpecification("esq",self.pos-1,self.campo,self.elevation,self.dir))
 
-        # # direita
+        # # # direita
         # if self.pos<len(self.campo[self.elevation])-1:
         #     successors.append(ProblemSpecification("dir",self.pos+1,self.campo,self.elevation,self.dir))
 
-        # # cima
+        # # # cima
         # if self.elevation>0:
         #     successors.append(ProblemSpecification('cima',self.pos,self.campo,self.elevation-1,self.dir))
 
-        # # baixo
+        # # # baixo
         # if self.elevation<len(self.campo)-1:
         #     successors.append(ProblemSpecification('baixo',self.pos,self.campo,self.elevation+1,self.dir))
 
@@ -60,6 +60,8 @@ class ProblemSpecification(State):
                         successors.append(self.pontos_sujos(d[0],d[1]))
                         break
                 # print('DIRECIONAR PRO MAIS PRÓXIMO')
+        
+        # print(self.campo)
     
         return successors
 
@@ -67,7 +69,7 @@ class ProblemSpecification(State):
         poss = [[elevation+1,pos],[elevation,pos+1],[elevation-1,pos],[elevation,pos-1]]
         estado = list()
         for p in poss:
-            if (p[0]<0 | p[0]==len(self.campo)) | (p[1]<0 | p[1]==len(self.campo[elevation])):
+            if (p[0]<0 | p[0]>=len(self.campo)) | (p[1]<0 | p[1]>=len(self.campo[elevation])):
                 estado.append(False)
             else:
                 estado.append(True)
@@ -114,7 +116,7 @@ def main():
     for i in range(10):
         casa.append(c)
     state = ProblemSpecification("Eu mesmo",0,casa,0,[0,0])
-    # algorithm = BuscaProfundidadeIterativa()
+    # algorithm = BuscaProfundidade()
     algorithm = BuscaLargura()
     result = algorithm.search(state)
     if result != None:
